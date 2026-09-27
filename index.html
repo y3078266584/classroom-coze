@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>课堂智能体</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #login {
+      text-align: center;
+    }
+    #login input {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    #login button {
+      padding: 10px 24px;
+      font-size: 16px;
+      margin-left: 8px;
+      cursor: pointer;
+      background: #1677ff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+    }
+    #error {
+      color: red;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div id="login">
+    <h2>请输入学号</h2>
+    <input type="text" id="studentId" placeholder="例如 20240101" />
+    <button id="startBtn">开始对话</button>
+    <p id="error"></p>
+  </div>
+
+  <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
+  <script>
+    let started = false;
+
+    document.getElementById('startBtn').addEventListener('click', function () {
+      if (started) return;
+
+      const studentId = document.getElementById('studentId').value.trim();
+      if (!studentId) {
+        document.getElementById('error').textContent = '请输入学号';
+        return;
+      }
+
+      started = true;
+      document.getElementById('login').style.display = 'none';
+
+      new CozeWebSDK.WebChatClient({
+        config: {
+          bot_id: '7687829820830761014',
+        },
+        componentProps: {
+          title: '课堂智能体',
+        },
+        userInfo: {
+          id: studentId,
+          nickname: studentId,
+        },
+        auth: {
+          type: 'token',
+          token: 'pat_gXWAbNPbLLC0NMwlWr0SlIDt0rC56if9GWymaFMdyv1danAvu8rVyvpw9Ifl3qTu',   // ← 替换成你的新 Token
+          onRefreshToken: function () {
+            return 'pat_gXWAbNPbLLC0NMwlWr0SlIDt0rC56if9GWymaFMdyv1danAvu8rVyvpw9Ifl3qTu'; // ← 替换成你的新 Token
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
