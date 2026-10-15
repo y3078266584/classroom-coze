@@ -5,85 +5,197 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>课堂智能体</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      background-color: #f5f7fa;
     }
     #login {
       text-align: center;
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    #login h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 22px;
     }
     #login input {
-      padding: 10px;
+      padding: 12px 16px;
       font-size: 16px;
-      width: 200px;
-      border: 1px solid #ccc;
+      width: 100%;
+      border: 1px solid #d9d9d9;
       border-radius: 6px;
+      outline: none;
+      transition: border-color 0.3s;
+      margin-bottom: 16px;
+    }
+    #login input:focus {
+      border-color: #1677ff;
     }
     #login button {
-      padding: 10px 24px;
+      padding: 12px 24px;
       font-size: 16px;
-      margin-left: 8px;
+      width: 100%;
       cursor: pointer;
       background: #1677ff;
       color: #fff;
       border: none;
       border-radius: 6px;
+      transition: background 0.3s;
+    }
+    #login button:hover {
+      background: #4096ff;
+    }
+    #login button:disabled {
+      background: #a0cfff;
+      cursor: not-allowed;
     }
     #error {
-      color: red;
+      color: #ff4d4f;
       font-size: 14px;
-      margin-top: 8px;
+      margin-top: 12px;
+      min-height: 20px;
+    }
+    .hidden {
+      display: none !important;
     }
   </style>
 </head>
 <body>
+  <!-- 登录容器 -->
   <div id="login">
-    <h2>请输入学号</h2>
-    <input type="text" id="studentId" placeholder="例如 20240101" />
+    <h2>请输入学号开始对话</h2>
+    <input type="text" id="studentId" placeholder="例如 20240101" autocomplete="off" />
     <button id="startBtn">开始对话</button>
     <p id="error"></p>
   </div>
 
+  <!-- 引入扣子 Chat SDK -->
   <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
+  
   <script>
-    let started = false;
+    // ==========================================
+    // ⚠️ 核心配置区
+    // ==========================================
+    const BOT_ID = '7687829820830761014';
+    
+    // ⚠️ 请在这里填入你真实的 PAT 令牌
+    const MY_PAT_TOKEN = 'pat_gXWAbNPbLLC0NMwlWr0SlIDt0rC56if9GWymaFMdyv1danAvu8rVyvpw9Ifl3qTu';
 
-    document.getElementById('startBtn').addEventListener('click', function () {
-      if (started) return;
-
-      const studentId = document.getElementById('studentId').value.trim();
-      if (!studentId) {
-        document.getElementById('error').textContent = '请输入学号';
-        return;
-      }
-
-      started = true;
-      document.getElementById('login').style.display = 'none';
-
-      new CozeWebSDK.WebChatClient({
-        config: {
-          bot_id: '7687829820830761014',
-        },
-        componentProps: {
-          title: '课堂智能体',
-        },
-        userInfo: {
-          id: studentId,
-          nickname: studentId,
-        },
-        auth: {
-          type: 'token',
-          token: 'pat_gXWAbNPbLLC0NMwlWr0SlIDt0rC56if9GWymaFMdyv1danAvu8rVyvpw9Ifl3qTu',   // ← 替换成你的新 Token
-          onRefreshToken: function () {
-            return 'pat_gXWAbNPbLLC0NMwlWr0SlIDt0rC56if9GWymaFMdyv1danAvu8rVyvpw9Ifl3qTu'; // ← 替换成你的新 Token
+    // ==========================================
+    // 核心启动函数
+    // ==========================================
+    function startChat(studentId, uniqueUserId) {
+      document.getElementById('login').classList.add('hidden');
+      
+      try {
+        new CozeWebSDK.WebChatClient({
+          config: {
+            bot_id: BOT_ID,
+          },
+          componentProps: {
+            title: '课堂智能体',
+          },
+          userInfo: {
+            id: uniqueUserId,       // 每次打开或刷新时传给 SDK 的 ID
+            nickname: studentId,    // 在后台显示学号，方便识别
+          },
+          auth: {
+            type: 'token',
+            token: MY_PAT_TOKEN,
+            onRefreshToken: function () {
+              // 如果 PAT 过期，需在这里替换为新的 PAT
+              return MY_PAT_TOKEN;
+            }
           }
+        });
+      } catch (err) {
+        console.error('Chat SDK 初始化失败:', err);
+        // 还原界面
+        document.getElementById('login').classList.remove('hidden');
+        const btn = document.getElementById('startBtn');
+        btn.disabled = false;
+        btn.textContent = '开始对话';
+        document.getElementById('error').textContent = '系统初始化失败，请刷新页面重试';
+      }
+    }
+
+    // ==========================================
+    // 页面加载逻辑：判断是刷新还是全新打开
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      // sessionStorage 特性：刷新页面数据保留，关闭标签页则清空
+      const savedUserId = sessionStorage.getItem('coze_user_id');
+      const savedStudentId = sessionStorage.getItem('coze_student_id');
+
+      if (savedUserId && savedStudentId) {
+        // 说明是学生按了 F5 刷新，直接恢复原有会话
+        console.log('检测到刷新，恢复会话:', savedStudentId);
+        startChat(savedStudentId, savedUserId);
+      } else {
+        // 全新打开，初始化登录逻辑
+        initLogin();
+      }
+    });
+
+    // ==========================================
+    // 登录交互逻辑
+    // ==========================================
+    function initLogin() {
+      const startBtn = document.getElementById('startBtn');
+      const studentIdInput = document.getElementById('studentId');
+      const errorEl = document.getElementById('error');
+      let started = false;
+
+      startBtn.addEventListener('click', function () {
+        if (started) return;
+
+        const studentId = studentIdInput.value.trim();
+        if (!studentId) {
+          errorEl.textContent = '请输入学号';
+          return;
+        }
+        if (studentId.length < 4) {
+          errorEl.textContent = '请输入正确的学号';
+          return;
+        }
+
+        started = true;
+        startBtn.disabled = true;
+        startBtn.textContent = '加载中...';
+        errorEl.textContent = '';
+
+        // 生成一个全新打开时唯一的 ID，确保与之前的记录完全隔离
+        // 格式：学号_时间戳_随机数
+        const uniqueUserId = `${studentId}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+
+        // 存入 sessionStorage（刷新保留，关掉页面清除）
+        sessionStorage.setItem('coze_user_id', uniqueUserId);
+        sessionStorage.setItem('coze_student_id', studentId);
+
+        // 启动聊天
+        startChat(studentId, uniqueUserId);
+      });
+
+      // 支持回车键
+      studentIdInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          startBtn.click();
         }
       });
-    });
+    }
   </script>
 </body>
 </html>
