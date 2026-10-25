@@ -11,20 +11,21 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
       align-items: center;
       height: 100vh;
       margin: 0;
+      padding-right: 2vw;
       background-color: #f5f7fa;
     }
     #login {
       text-align: center;
       background: #fff;
-      padding: 40px;
+      padding: 36px 26px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       width: 90%;
-      max-width: 400px;
+      max-width: 320px;
     }
     #login h2 {
       margin-top: 0;
@@ -71,9 +72,134 @@
     .hidden {
       display: none !important;
     }
+
+    /* ============ 证据核查支架（页面左侧 2/3，常驻） ============ */
+    #scaffold {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 64vw;
+      max-width: 880px;
+      padding: 34px 44px 28px;
+      background: #fff;
+      border-right: 1px solid #e3eaf3;
+      overflow-y: auto;
+      z-index: 10;
+      font-family: "Microsoft YaHei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    #scaffold .sc-inner {
+      max-width: 620px;
+    }
+    .sc-title {
+      font-size: 21px;
+      font-weight: 700;
+      color: #183f60;
+      letter-spacing: 0.5px;
+    }
+    .sc-sub {
+      font-size: 14px;
+      color: #7b8794;
+      margin-top: 6px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #eef2f7;
+    }
+    .sc-step {
+      margin-top: 20px;
+    }
+    .sc-step-h {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      font-size: 16.5px;
+      font-weight: 700;
+      color: #183f60;
+      line-height: 1.4;
+    }
+    .sc-num {
+      flex: 0 0 auto;
+      font-size: 16px;
+      line-height: 1.25;
+      font-weight: 700;
+      color: #a62a2a;
+    }
+    .sc-p {
+      font-size: 14.5px;
+      color: #333;
+      line-height: 1.75;
+      margin: 6px 0 0 27px;
+    }
+    .sc-p.gray {
+      color: #808c99;
+      font-size: 13.8px;
+    }
+    .sc-li {
+      position: relative;
+      font-size: 14px;
+      color: #3d4653;
+      line-height: 1.72;
+      margin: 3px 0 0 27px;
+      padding-left: 13px;
+    }
+    .sc-li::before {
+      content: "·";
+      position: absolute;
+      left: 2px;
+      top: -1px;
+      color: #183f60;
+      font-weight: 700;
+      font-size: 17px;
+    }
+    .sc-quote {
+      color: #183f60;
+      font-weight: 600;
+    }
+    .sc-tip {
+      background: #fdf5f5;
+      border-left: 3px solid #a62a2a;
+      padding: 9px 12px;
+      margin: 10px 0 0 27px;
+      font-size: 13.8px;
+      color: #8a2323;
+      line-height: 1.65;
+    }
   </style>
 </head>
 <body>
+  <!-- ============ 证据核查支架（学生边问边看） ============ -->
+  <aside id="scaffold">
+    <div class="sc-inner">
+      <div class="sc-title">三步核查</div>
+      <div class="sc-sub">AI 答完，先别急着抄。三步，做完再决定信不信。</div>
+
+      <div class="sc-step">
+        <div class="sc-step-h"><span class="sc-num">①</span><span>找出来：它到底说了几件事</span></div>
+        <div class="sc-p">别整段扫一眼就说“懂了”。一句一句过，用几个字说说这句在讲什么。</div>
+        <div class="sc-p gray">比如它说“这所博物馆周二闭馆，门票免费，但要提前预约”——那是三件事：哪天不开、要不要钱、用不用约。</div>
+      </div>
+
+      <div class="sc-step">
+        <div class="sc-step-h"><span class="sc-num">②</span><span>挑毛病：哪一句让你顿了一下</span></div>
+        <div class="sc-p">AI 写得越顺，越容易看漏。下面这几种，停一下：</div>
+        <div class="sc-li">把话说死了——一定、肯定、全都、从来不会</div>
+        <div class="sc-li">突然冒出个准确数字——<span class="sc-quote">“300 年前”“全国第一”</span></div>
+        <div class="sc-li">说得很有道理，可它没说<span class="sc-quote">“这是谁讲的”</span></div>
+        <div class="sc-li">你心里“咦”了一下</div>
+        <div class="sc-tip">前三条看得见，最后一条只是感觉。拿不准，就往下做第三步。</div>
+      </div>
+
+      <div class="sc-step">
+        <div class="sc-step-h"><span class="sc-num">③</span><span>换地方查：离开这里，去别处看一眼</span></div>
+        <div class="sc-p">这步最容易省。有人以为“再问一遍 AI”就算查过了——不算，还是那个 AI，它多半还这么说。</div>
+        <div class="sc-p">得真的换个地方：</div>
+        <div class="sc-li">重新搜一遍，别看完第一页就收工</div>
+        <div class="sc-li">找政府网站、博物馆官网、央视网这类地方怎么说</div>
+        <div class="sc-li">两边对不上，更要多看几家，别急着抄进作业</div>
+        <div class="sc-p gray">熟练了，一两分钟就够。</div>
+      </div>
+    </div>
+  </aside>
+
   <!-- 登录容器 -->
   <div id="login">
     <h2>请输入学号开始对话</h2>
